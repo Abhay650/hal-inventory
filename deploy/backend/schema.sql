@@ -1,9 +1,3 @@
-DROP DATABASE IF EXISTS Computer_Spare;
-
-CREATE DATABASE Computer_Spare;
-
-USE Computer_Spare;
-
 --------------------------------------------------------
 -- USERS TABLE
 --------------------------------------------------------
@@ -128,6 +122,3 @@ VALUES
 ('8CP4',5,10,15,'6 Months','2026-07-02'),
 
 ('3MO9',90,40,60,'4 Years','2026-07-02');
-
-USE Computer_Spare;
-SHOW TABLES;
