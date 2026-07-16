@@ -1,5 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <circle cx="50" cy="50" r="48" fill="#ffffff" stroke="#003f7d" stroke-width="3"/>
-  <path d="M50 15 L80 40 L68 40 L68 78 L32 78 L32 40 L20 40 Z" fill="#005BAC"/>
-  <text x="50" y="92" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#003f7d">HAL</text>
-</svg>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#f4f6f9;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.container{
+    background:#fff;
+    padding:40px;
+    border-radius:12px;
+    box-shadow:0 5px 20px rgba(0,0,0,.15);
+    text-align:center;
+}
+
+.hal-logo{
+    width:350px;
+    height:auto;
+    margin-bottom:20px;
+}
+
+h1{
+    color:#005BAC;
+    font-size:28px;
+    margin-bottom:10px;
+}
+
+p{
+    color:#555;
+    font-size:18px;
+}
