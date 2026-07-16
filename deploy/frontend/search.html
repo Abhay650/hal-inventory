@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search Computer Spare</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+<img class="logo" src="logo.svg" alt="HAL logo">
+<div>
+<h1>HINDUSTAN AERONAUTICS LIMITED</h1>
+<p>Computer Spare Inventory Management System</p>
+</div>
+</div>
+
+<div class="nav"><a href="dashboard.html">Dashboard</a></div>
+
+<div class="searchbox">
+<form id="searchForm">
+<input type="text" name="q" placeholder="Enter Part ID or Part Name" required>
+<button type="submit">Search</button>
+</form>
+</div>
+
+<div id="msg" style="width:95%;margin:0 auto 15px auto;"></div>
+
+<table id="resultsTable" style="display:none;">
+<thead>
+<tr>
+<th>Part ID</th><th>Part Name</th><th>Manufacturer</th><th>Department</th><th>Unit Cost</th>
+<th>Quantity</th><th>Current Stock</th><th>Minimum Stock</th><th>Reorder Stock</th><th>Shelf Life</th><th>Last Update</th>
+</tr>
+</thead>
+<tbody id="rows"></tbody>
+</table>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+requireLogin();
+
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const q = e.target.q.value;
+  const msg = document.getElementById("msg");
+  const table = document.getElementById("resultsTable");
+  msg.innerHTML = "";
+  try {
+    const data = await apiCall("/search.php?q=" + encodeURIComponent(q));
+    if (data.data.length === 0) {
+      table.style.display = "none";
+      msg.innerHTML = `<div class="error">No matching parts found</div>`;
+      return;
+    }
+    document.getElementById("rows").innerHTML = data.data.map(r => `
+      <tr>
+        <td>${r.PART_ID}</td><td>${r.PART_NAME}</td><td>${r.MANUFACTURER_NAME}</td><td>${r.DEPT_ID}</td>
+        <td>${r.UNIT_COST}</td><td>${r.QUANTITY}</td><td>${r.CURRENT_STOCK ?? "-"}</td>
+        <td>${r.MINIMUM_STOCK ?? "-"}</td><td>${r.REORDER_STOCK ?? "-"}</td>
+        <td>${r.SHELF_LIFE ?? "-"}</td><td>${r.LAST_UPDATE ?? "-"}</td>
+      </tr>
+    `).join("");
+    table.style.display = "table";
+  } catch (err) {
+    msg.innerHTML = `<div class="error">${err.message}</div>`;
+  }
+});
+</script>
+
+</body>
+</html>

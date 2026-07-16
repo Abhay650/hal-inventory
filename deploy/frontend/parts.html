@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Computer Parts</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+<img class="logo" src="logo.svg" alt="HAL logo">
+<div>
+<h1>HINDUSTAN AERONAUTICS LIMITED</h1>
+<p>Computer Spare Inventory Management System</p>
+</div>
+</div>
+
+<div class="nav"><a href="dashboard.html">Dashboard</a></div>
+
+<div class="container">
+<h2>Add Computer Part</h2>
+
+<div id="msg"></div>
+
+<form id="partForm">
+<label>Part ID</label>
+<input type="text" name="partid" required>
+
+<label>Part Name</label>
+<input type="text" name="partname" required>
+
+<label>Transaction ID</label>
+<input type="text" name="transaction" required>
+
+<label>Manufacturer</label>
+<input type="text" name="manufacturer" required>
+
+<label>Unit Cost</label>
+<input type="text" name="cost" required>
+
+<label>Quantity</label>
+<input type="number" name="quantity" required>
+
+<label>Department</label>
+<input type="text" name="dept" required>
+
+<button type="submit">Save Record</button>
+</form>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+requireLogin();
+
+document.getElementById("partForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const msg = document.getElementById("msg");
+  msg.innerHTML = "";
+  try {
+    await apiCall("/parts.php", {
+      method: "POST",
+      body: {
+        partid: f.partid.value,
+        partname: f.partname.value,
+        transaction: f.transaction.value,
+        manufacturer: f.manufacturer.value,
+        cost: f.cost.value,
+        quantity: f.quantity.value,
+        dept: f.dept.value,
+      },
+    });
+    window.location.href = "parts_view.html";
+  } catch (err) {
+    msg.innerHTML = `<div class="error">${err.message}</div>`;
+  }
+});
+</script>
+
+</body>
+</html>

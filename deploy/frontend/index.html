@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HAL Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+<img class="logo" src="logo.svg" alt="HAL logo">
+<div>
+<h1>HINDUSTAN AERONAUTICS LIMITED</h1>
+<p>Computer Spare Inventory Management System</p>
+</div>
+</div>
+
+<div class="container">
+<h2>User Login</h2>
+
+<div id="msg"></div>
+
+<form id="loginForm">
+<label>Username</label>
+<input type="text" name="username" required>
+
+<label>Password</label>
+<input type="password" name="password" required>
+
+<button type="submit">Login</button>
+</form>
+
+<div class="footer">
+New User?
+<br><br>
+<a href="signup.html">Create Account</a>
+</div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script>
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const msg = document.getElementById("msg");
+  msg.innerHTML = "";
+  try {
+    const data = await apiCall("/login.php", {
+      method: "POST",
+      auth: false,
+      body: {
+        username: form.username.value,
+        password: form.password.value,
+      },
+    });
+    localStorage.setItem("hal_token", data.token);
+    localStorage.setItem("hal_username", data.username);
+    window.location.href = "dashboard.html";
+  } catch (err) {
+    msg.innerHTML = `<div class="error">${err.message}</div>`;
+  }
+});
+</script>
+
+</body>
+</html>

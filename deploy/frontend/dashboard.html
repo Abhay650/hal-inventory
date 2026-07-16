@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+<img class="logo" src="logo.svg" alt="HAL logo">
+<div>
+<h1>HINDUSTAN AERONAUTICS LIMITED</h1>
+<p>Computer Spare Inventory Management System</p>
+</div>
+</div>
+
+<div class="nav">
+Welcome, <span id="who"></span>
+<a href="#" id="logoutLink">Logout</a>
+</div>
+
+<div class="dashboard">
+<div class="cards">
+<a href="parts.html" class="card"><h2>Computer Parts</h2><p>Add / Manage Parts</p></a>
+<a href="parts_view.html" class="card"><h2>View Parts</h2><p>Parts Details</p></a>
+<a href="supplier.html" class="card"><h2>Suppliers</h2><p>Supplier Entry</p></a>
+<a href="supplier_view.html" class="card"><h2>View Suppliers</h2><p>Supplier Records</p></a>
+<a href="stocks.html" class="card"><h2>Stocks</h2><p>Stock Entry</p></a>
+<a href="stocks_view.html" class="card"><h2>View Stocks</h2><p>Current Stock</p></a>
+<a href="search.html" class="card"><h2>Search</h2><p>Search Spare Item</p></a>
+</div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+if (requireLogin()) {
+  document.getElementById("who").textContent = currentUsername();
+}
+document.getElementById("logoutLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  logout();
+});
+</script>
+
+</body>
+</html>

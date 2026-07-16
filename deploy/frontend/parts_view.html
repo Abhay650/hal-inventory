@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Computer Parts</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+<img class="logo" src="logo.svg" alt="HAL logo">
+<div>
+<h1>HINDUSTAN AERONAUTICS LIMITED</h1>
+<p>Computer Parts Details</p>
+</div>
+</div>
+
+<div class="nav"><a href="dashboard.html">Dashboard</a> <a href="parts.html">Add Part</a></div>
+
+<div id="msg" style="width:95%;margin:15px auto;"></div>
+
+<table>
+<thead>
+<tr>
+<th>Part ID</th><th>Part Name</th><th>Transaction ID</th><th>Manufacturer</th>
+<th>Unit Cost</th><th>Quantity</th><th>Department</th><th>Edit</th><th>Delete</th>
+</tr>
+</thead>
+<tbody id="rows"></tbody>
+</table>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+requireLogin();
+const msg = document.getElementById("msg");
+let parts = [];
+
+function render() {
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = parts.map((p, i) => `
+    <tr data-id="${p.PART_ID}">
+      <td>${p.PART_ID}</td>
+      <td><span class="view">${p.PART_NAME}</span><input class="edit" style="display:none" value="${p.PART_NAME}" data-field="partname"></td>
+      <td><span class="view">${p.TRANSACTION_ID}</span><input class="edit" style="display:none" value="${p.TRANSACTION_ID}" data-field="transaction"></td>
+      <td><span class="view">${p.MANUFACTURER_NAME}</span><input class="edit" style="display:none" value="${p.MANUFACTURER_NAME}" data-field="manufacturer"></td>
+      <td><span class="view">${p.UNIT_COST}</span><input class="edit" style="display:none" value="${p.UNIT_COST}" data-field="cost"></td>
+      <td><span class="view">${p.QUANTITY}</span><input class="edit" style="display:none" value="${p.QUANTITY}" data-field="quantity"></td>
+      <td><span class="view">${p.DEPT_ID}</span><input class="edit" style="display:none" value="${p.DEPT_ID}" data-field="dept"></td>
+      <td><button class="action edit-btn">Edit</button></td>
+      <td><button class="action delete delete-btn">Delete</button></td>
+    </tr>
+  `).join("");
+}
+
+async function load() {
+  try {
+    const data = await apiCall("/parts.php");
+    parts = data.data;
+    render();
+  } catch (err) {
+    msg.innerHTML = `<div class="error">${err.message}</div>`;
+  }
+}
+
+document.getElementById("rows").addEventListener("click", async (e) => {
+  const tr = e.target.closest("tr");
+  if (!tr) return;
+  const id = tr.dataset.id;
+
+  if (e.target.classList.contains("edit-btn")) {
+    const editing = e.target.textContent === "Save";
+    if (!editing) {
+      tr.querySelectorAll(".view").forEach(el => el.style.display = "none");
+      tr.querySelectorAll(".edit").forEach(el => el.style.display = "inline-block");
+      e.target.textContent = "Save";
+    } else {
+      const body = {};
+      tr.querySelectorAll(".edit").forEach(el => body[el.dataset.field] = el.value);
+      try {
+        await apiCall("/parts.php?id=" + encodeURIComponent(id), { method: "PUT", body });
+        msg.innerHTML = `<div class="success">Part updated</div>`;
+        load();
+      } catch (err) {
+        msg.innerHTML = `<div class="error">${err.message}</div>`;
+      }
+    }
+  }
+
+  if (e.target.classList.contains("delete-btn")) {
+    if (!confirm("Delete this part?")) return;
+    try {
+      await apiCall("/parts.php?id=" + encodeURIComponent(id), { method: "DELETE" });
+      load();
+    } catch (err) {
+      msg.innerHTML = `<div class="error">${err.message}</div>`;
+    }
+  }
+});
+
+load();
+</script>
+
+</body>
+</html>

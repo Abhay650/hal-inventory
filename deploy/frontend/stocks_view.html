@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stock Details</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+<img class="logo" src="logo.svg" alt="HAL logo">
+<div>
+<h1>HINDUSTAN AERONAUTICS LIMITED</h1>
+<p>Stock Details</p>
+</div>
+</div>
+
+<div class="nav"><a href="dashboard.html">Dashboard</a> <a href="stocks.html">Add Stock</a></div>
+
+<div id="msg" style="width:95%;margin:15px auto;"></div>
+
+<table>
+<thead>
+<tr>
+<th>Stock ID</th><th>Part ID</th><th>Part Name</th><th>Current Stock</th><th>Minimum Stock</th>
+<th>Reorder Stock</th><th>Shelf Life</th><th>Last Update</th><th>Edit</th><th>Delete</th>
+</tr>
+</thead>
+<tbody id="rows"></tbody>
+</table>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+requireLogin();
+const msg = document.getElementById("msg");
+let stocks = [];
+
+function render() {
+  document.getElementById("rows").innerHTML = stocks.map(s => `
+    <tr data-id="${s.STOCK_ID}">
+      <td>${s.STOCK_ID}</td>
+      <td>${s.PART_ID}</td>
+      <td>${s.PART_NAME}</td>
+      <td><span class="view">${s.CURRENT_STOCK}</span><input class="edit" style="display:none" value="${s.CURRENT_STOCK}" data-field="current"></td>
+      <td><span class="view">${s.MINIMUM_STOCK}</span><input class="edit" style="display:none" value="${s.MINIMUM_STOCK}" data-field="minimum"></td>
+      <td><span class="view">${s.REORDER_STOCK}</span><input class="edit" style="display:none" value="${s.REORDER_STOCK}" data-field="reorder"></td>
+      <td><span class="view">${s.SHELF_LIFE}</span><input class="edit" style="display:none" value="${s.SHELF_LIFE}" data-field="life"></td>
+      <td><span class="view">${s.LAST_UPDATE}</span><input class="edit" type="date" style="display:none" value="${s.LAST_UPDATE}" data-field="date"></td>
+      <td><button class="action edit-btn">Edit</button></td>
+      <td><button class="action delete delete-btn">Delete</button></td>
+    </tr>
+  `).join("");
+}
+
+async function load() {
+  try {
+    const data = await apiCall("/stocks.php");
+    stocks = data.data;
+    render();
+  } catch (err) {
+    msg.innerHTML = `<div class="error">${err.message}</div>`;
+  }
+}
+
+document.getElementById("rows").addEventListener("click", async (e) => {
+  const tr = e.target.closest("tr");
+  if (!tr) return;
+  const id = tr.dataset.id;
+
+  if (e.target.classList.contains("edit-btn")) {
+    const editing = e.target.textContent === "Save";
+    if (!editing) {
+      tr.querySelectorAll(".view").forEach(el => el.style.display = "none");
+      tr.querySelectorAll(".edit").forEach(el => el.style.display = "inline-block");
+      e.target.textContent = "Save";
+    } else {
+      const body = {};
+      tr.querySelectorAll(".edit").forEach(el => body[el.dataset.field] = el.value);
+      try {
+        await apiCall("/stocks.php?id=" + encodeURIComponent(id), { method: "PUT", body });
+        msg.innerHTML = `<div class="success">Stock updated</div>`;
+        load();
+      } catch (err) {
+        msg.innerHTML = `<div class="error">${err.message}</div>`;
+      }
+    }
+  }
+
+  if (e.target.classList.contains("delete-btn")) {
+    if (!confirm("Delete this stock record?")) return;
+    try {
+      await apiCall("/stocks.php?id=" + encodeURIComponent(id), { method: "DELETE" });
+      load();
+    } catch (err) {
+      msg.innerHTML = `<div class="error">${err.message}</div>`;
+    }
+  }
+});
+
+load();
+</script>
+
+</body>
+</html>

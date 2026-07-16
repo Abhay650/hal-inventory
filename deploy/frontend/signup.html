@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register User</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+<img class="logo" src="logo.svg" alt="HAL logo">
+<div>
+<h1>HINDUSTAN AERONAUTICS LIMITED</h1>
+<p>Computer Spare Inventory Management System</p>
+</div>
+</div>
+
+<div class="container">
+<h2>User Registration</h2>
+
+<div id="msg"></div>
+
+<form id="signupForm">
+<label>Employee ID</label>
+<input type="text" name="empid" required>
+
+<label>Employee Name</label>
+<input type="text" name="name" required>
+
+<label>Department</label>
+<input type="text" name="dept" required>
+
+<label>Username</label>
+<input type="text" name="username" required>
+
+<label>Password</label>
+<input type="password" name="password" required>
+
+<label>Email</label>
+<input type="email" name="email" required>
+
+<label>Phone Number</label>
+<input type="text" name="phone" required>
+
+<button type="submit">Register</button>
+</form>
+
+<div class="footer">
+<a href="index.html">Back to login</a>
+</div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script>
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const msg = document.getElementById("msg");
+  msg.innerHTML = "";
+  try {
+    await apiCall("/signup.php", {
+      method: "POST",
+      auth: false,
+      body: {
+        empid: form.empid.value,
+        name: form.name.value,
+        dept: form.dept.value,
+        username: form.username.value,
+        password: form.password.value,
+        email: form.email.value,
+        phone: form.phone.value,
+      },
+    });
+    msg.innerHTML = `<div class="success">Registration successful. Redirecting to login...</div>`;
+    setTimeout(() => (window.location.href = "index.html"), 1200);
+  } catch (err) {
+    msg.innerHTML = `<div class="error">${err.message}</div>`;
+  }
+});
+</script>
+
+</body>
+</html>

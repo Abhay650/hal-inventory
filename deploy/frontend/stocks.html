@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stock Entry</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+<img class="logo" src="logo.svg" alt="HAL logo">
+<div>
+<h1>HAL Inventory System</h1>
+<p>Stock Management</p>
+</div>
+</div>
+
+<div class="nav"><a href="dashboard.html">Dashboard</a></div>
+
+<div class="container">
+<h2>Stock Entry</h2>
+
+<div id="msg"></div>
+
+<form id="stockForm">
+<label>Part ID</label>
+<input type="text" name="partid" required>
+
+<label>Current Stock</label>
+<input type="number" name="current" required>
+
+<label>Minimum Stock</label>
+<input type="number" name="minimum" required>
+
+<label>Reorder Stock</label>
+<input type="number" name="reorder" required>
+
+<label>Shelf Life</label>
+<input type="text" name="life" required>
+
+<label>Last Update</label>
+<input type="date" name="date" required>
+
+<button type="submit">Save Stock</button>
+</form>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+requireLogin();
+
+document.getElementById("stockForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const msg = document.getElementById("msg");
+  msg.innerHTML = "";
+  try {
+    await apiCall("/stocks.php", {
+      method: "POST",
+      body: {
+        partid: f.partid.value,
+        current: f.current.value,
+        minimum: f.minimum.value,
+        reorder: f.reorder.value,
+        life: f.life.value,
+        date: f.date.value,
+      },
+    });
+    window.location.href = "stocks_view.html";
+  } catch (err) {
+    msg.innerHTML = `<div class="error">${err.message}</div>`;
+  }
+});
+</script>
+
+</body>
+</html>

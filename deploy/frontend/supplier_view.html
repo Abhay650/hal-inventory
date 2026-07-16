@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supplier Details</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+<img class="logo" src="logo.svg" alt="HAL logo">
+<div>
+<h1>HINDUSTAN AERONAUTICS LIMITED</h1>
+<p>Supplier Details</p>
+</div>
+</div>
+
+<div class="nav"><a href="dashboard.html">Dashboard</a> <a href="supplier.html">Add Supplier</a></div>
+
+<div id="msg" style="width:95%;margin:15px auto;"></div>
+
+<table>
+<thead>
+<tr><th>Supplier ID</th><th>Supplier Name</th><th>Contact Number</th><th>Address</th><th>Edit</th><th>Delete</th></tr>
+</thead>
+<tbody id="rows"></tbody>
+</table>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+requireLogin();
+const msg = document.getElementById("msg");
+let suppliers = [];
+
+function render() {
+  document.getElementById("rows").innerHTML = suppliers.map(s => `
+    <tr data-id="${s.SUPPLIER_ID}">
+      <td>${s.SUPPLIER_ID}</td>
+      <td><span class="view">${s.SUPPLIER_NAME}</span><input class="edit" style="display:none" value="${s.SUPPLIER_NAME}" data-field="name"></td>
+      <td><span class="view">${s.CONTACT_NO}</span><input class="edit" style="display:none" value="${s.CONTACT_NO}" data-field="contact"></td>
+      <td><span class="view">${s.ADDRESS}</span><input class="edit" style="display:none" value="${s.ADDRESS}" data-field="address"></td>
+      <td><button class="action edit-btn">Edit</button></td>
+      <td><button class="action delete delete-btn">Delete</button></td>
+    </tr>
+  `).join("");
+}
+
+async function load() {
+  try {
+    const data = await apiCall("/suppliers.php");
+    suppliers = data.data;
+    render();
+  } catch (err) {
+    msg.innerHTML = `<div class="error">${err.message}</div>`;
+  }
+}
+
+document.getElementById("rows").addEventListener("click", async (e) => {
+  const tr = e.target.closest("tr");
+  if (!tr) return;
+  const id = tr.dataset.id;
+
+  if (e.target.classList.contains("edit-btn")) {
+    const editing = e.target.textContent === "Save";
+    if (!editing) {
+      tr.querySelectorAll(".view").forEach(el => el.style.display = "none");
+      tr.querySelectorAll(".edit").forEach(el => el.style.display = "inline-block");
+      e.target.textContent = "Save";
+    } else {
+      const body = {};
+      tr.querySelectorAll(".edit").forEach(el => body[el.dataset.field] = el.value);
+      try {
+        await apiCall("/suppliers.php?id=" + encodeURIComponent(id), { method: "PUT", body });
+        msg.innerHTML = `<div class="success">Supplier updated</div>`;
+        load();
+      } catch (err) {
+        msg.innerHTML = `<div class="error">${err.message}</div>`;
+      }
+    }
+  }
+
+  if (e.target.classList.contains("delete-btn")) {
+    if (!confirm("Delete this supplier?")) return;
+    try {
+      await apiCall("/suppliers.php?id=" + encodeURIComponent(id), { method: "DELETE" });
+      load();
+    } catch (err) {
+      msg.innerHTML = `<div class="error">${err.message}</div>`;
+    }
+  }
+});
+
+load();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+DROP DATABASE IF EXISTS Computer_Spare;
+
+CREATE DATABASE Computer_Spare;
+
+USE Computer_Spare;
+
+--------------------------------------------------------
+-- USERS TABLE
+--------------------------------------------------------
+
+CREATE TABLE USERS(
+    USER_ID INT AUTO_INCREMENT PRIMARY KEY,
+    EMPLOYEE_ID VARCHAR(20),
+    EMPLOYEE_NAME VARCHAR(100),
+    DEPARTMENT VARCHAR(50),
+    USERNAME VARCHAR(50) UNIQUE,
+    PASSWORD VARCHAR(100),
+    EMAIL VARCHAR(100),
+    PHONE VARCHAR(15)
+);
+
+INSERT INTO USERS
+(EMPLOYEE_ID,EMPLOYEE_NAME,DEPARTMENT,USERNAME,PASSWORD,EMAIL,PHONE)
+VALUES
+('HAL001','Administrator','IT','admin','admin123',
+'admin@hal.com','9876543210');
+
+--------------------------------------------------------
+-- SUPPLIER TABLE
+--------------------------------------------------------
+
+CREATE TABLE SUPPLIER(
+
+SUPPLIER_ID VARCHAR(20) PRIMARY KEY,
+
+SUPPLIER_NAME VARCHAR(50),
+
+CONTACT_NO VARCHAR(20),
+
+ADDRESS VARCHAR(100)
+
+);
+
+INSERT INTO SUPPLIER VALUES
+
+('343','DELL','8356XXXXXX','NOIDA'),
+
+('563','LENOVO','9556XXXXXX','DELHI'),
+
+('353','HP','9156XXXXXX','HYDERABAD'),
+
+('243','ACER','8156XXXXXX','GHAZIABAD');
+
+--------------------------------------------------------
+-- COMPUTER PARTS
+--------------------------------------------------------
+
+CREATE TABLE COMPUTER_PARTS(
+
+PART_ID VARCHAR(20) PRIMARY KEY,
+
+PART_NAME VARCHAR(50),
+
+TRANSACTION_ID VARCHAR(30),
+
+MANUFACTURER_NAME VARCHAR(50),
+
+UNIT_COST VARCHAR(20),
+
+QUANTITY INT,
+
+DEPT_ID VARCHAR(30)
+
+);
+
+INSERT INTO COMPUTER_PARTS VALUES
+
+('3M4','MOUSE','23DE54','DELL','1000',100,'IT'),
+
+('2MB4','MOTHER BOARD','23HP53','HP','2000',100,'ELECTRONICS'),
+
+('5R4','RAM','23AC57','ACER','5000',50,'IT'),
+
+('4SD6','SSD','23LE69','LENOVO','3000',100,'CIVIL'),
+
+('8CP4','CPU','23DE78','DELL','5000',60,'IT'),
+
+('3MO9','MONITOR','23HP94','HP','5000',90,'MECHANICAL');
+
+--------------------------------------------------------
+-- STOCKS
+--------------------------------------------------------
+
+CREATE TABLE STOCKS(
+
+STOCK_ID INT AUTO_INCREMENT PRIMARY KEY,
+
+PART_ID VARCHAR(20),
+
+CURRENT_STOCK INT,
+
+MINIMUM_STOCK INT,
+
+REORDER_STOCK INT,
+
+SHELF_LIFE VARCHAR(30),
+
+LAST_UPDATE DATE,
+
+FOREIGN KEY(PART_ID)
+REFERENCES COMPUTER_PARTS(PART_ID)
+
+);
+
+INSERT INTO STOCKS
+(PART_ID,CURRENT_STOCK,MINIMUM_STOCK,REORDER_STOCK,SHELF_LIFE,LAST_UPDATE)
+
+VALUES
+
+('3M4',50,20,30,'2 Years','2026-07-02'),
+
+('2MB4',120,40,60,'3 Years','2026-07-02'),
+
+('5R4',15,10,20,'1 Year','2026-07-02'),
+
+('4SD6',200,80,100,'5 Years','2026-07-02'),
+
+('8CP4',5,10,15,'6 Months','2026-07-02'),
+
+('3MO9',90,40,60,'4 Years','2026-07-02');
+
+USE Computer_Spare;
+SHOW TABLES;
